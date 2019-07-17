@@ -1,8 +1,16 @@
 # BonlieuMean
 
-This is a project using the MEAN Stack - MongoDB, Express.js, Angular and Node.js.
+This is a JavaScript project using the MEAN Stack - MongoDB, Express.js, Angular and Node.js.
 
 The project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.1.0.
+
+## Frameworks used
+
+[MongoDB](https://www.mongodb.com/) - a noSQL database with JSON-like documents and schema
+[Mongoose.js](https://mongoosejs.com/) - object modeling / object relational mapping for mongodb
+[Express.js](https://expressjs.com/) - a web application framework for node.js
+[Angular](https://angular.io/) - a TypeScript-based open source web application framework by Google
+[Node.js](https://nodejs.org/) - a JavaScript runtime built on [Chrome's V8 JavaScript engine](https://v8.dev/)
 
 ## Development server
 
