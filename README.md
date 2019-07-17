@@ -16,6 +16,24 @@ The project was generated with [Angular CLI](https://github.com/angular/angular-
 
 [Node.js](https://nodejs.org/) - a JavaScript runtime built on [Chrome's V8 JavaScript engine](https://v8.dev/)
 
+## Development tools used
+
+[Angular Material](https://material.angular.io/) - Material Design components for Angular
+
+[npm](https://www.npmjs.com/) - a JavaScript package manager for node.js
+
+bcryptjs - a library to hash passwords
+
+body-parser - incoming request body parsing middleware
+
+dotenv - a module to handle environment variables
+
+mongoose-unique-validator - a plugin to pre-validate unique fields in a mongoose schema
+
+multer - a multipart/form data handling middleware for uploading files
+
+[Visual Studio Code](https://code.visualstudio.com/) - a code editor for building and debugging modern web and clould applications
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
