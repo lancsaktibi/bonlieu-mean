@@ -3,13 +3,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+require('dotenv').config();
+
 const postsRoutes = require('./express_routes/posts');
 const userRoutes = require('./express_routes/user');
 
 const app = express();
 
 // connect to db
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: 'true'})
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: 'true', useCreateIndex: 'true'})
   .then(() => {
     console.log('Connected to database!');
   })
@@ -25,7 +27,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/images", express.static(path.join(__dirname, "images"))); // forward request to /images
 // provide access to the angular folder
 app.use("/", express.static(path.join(__dirname, "angular"))); // forward request to /angular
-console.log(path.join(__dirname, "angular"));
 
 // middleware for CORS - Cross Origin Resource Sharing
 app.use((req, res, next) => {
