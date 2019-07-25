@@ -28,9 +28,13 @@ body-parser - incoming request body parsing middleware
 
 dotenv - a module to handle environment variables
 
+[jwt](https://jwt.io/) - a security standard to use JSON-based Web Tokens for authentication
+
 mongoose-unique-validator - a plugin to pre-validate unique fields in a mongoose schema
 
 multer - a multipart/form data handling middleware for uploading files
+
+[rxjs](https://rxjs.dev/) - a library used for reactive / asynchronous programming with observables or callbacks
 
 [Visual Studio Code](https://code.visualstudio.com/) - a code editor for building and debugging modern web and clould applications
 

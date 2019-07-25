@@ -31,7 +31,7 @@ app.use("/", express.static(path.join(__dirname, "angular"))); // forward reques
 // middleware for CORS - Cross Origin Resource Sharing
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // allow all other resources / domains to access data
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // allow these headers in the request
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization"); // allow these headers in the request
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS"); // allow http methods
   next();
 });

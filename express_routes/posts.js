@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 
 const Post = require('../mongo_models/post');
+const jwtAuth = require('../jwt_middleware/jwt_auth');
 
 const router = express.Router();
 
@@ -33,7 +34,8 @@ const storage = multer.diskStorage({
 });
 
 // route for POST requests for /api/posts
-router.post('', multer({storage: storage}).single('image'), (req, res, next) => {
+// auth middleware added
+router.post('', jwtAuth, multer({storage: storage}).single('image'), (req, res, next) => {
   const url = req.protocol + '://' + req.get('host'); // create the file url up until the host
   const post = new Post({
     title: req.body.title,
@@ -54,7 +56,8 @@ router.post('', multer({storage: storage}).single('image'), (req, res, next) => 
 });
 
 // route for UPDATE requests
-router.put("/:id", multer({storage: storage}).single('image'), (req, res, next) => {
+// auth middleware added
+router.put("/:id", jwtAuth, multer({storage: storage}).single('image'), (req, res, next) => {
 
   // check if new image file added or we receive image file path only
   let imagePath = req.body.imagePath; // use the file path received from the frontend (old path)
@@ -114,7 +117,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 // route for DELETE requests for /api/posts/:id
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', jwtAuth, (req, res, next) => {
   Post.deleteOne({ _id: req.params.id })
     .then(result => {
       res.status(200).json({ message: "Post deleted!" });

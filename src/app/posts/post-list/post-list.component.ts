@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -17,7 +18,9 @@ export class PostListComponent implements OnInit, OnDestroy {
   postsPerPage = 2; // items per page for paginator
   pageSizeOptions = [1, 2, 5, 10]; // options for user to show items for paginator
   currentPage = 1; // initial value for paginator
+  userIsAuthenticated = false; // public authStatus
   private postsSub: Subscription;
+  private authStatusSub: Subscription; // private authStatus
 
   //  posts = [
   //    {title: 'First Post', content: 'This is the first post text'},
@@ -25,7 +28,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   //    {title: 'Third Post', content: 'This is the third post text'}
   //  ];
 
-  constructor(public postsService: PostsService) {}
+  constructor(public postsService: PostsService, private authService: AuthService) {}
 
   ngOnInit() {
     this.isLoading = true; // to show spinner
@@ -36,6 +39,14 @@ export class PostListComponent implements OnInit, OnDestroy {
         this.totalPosts = postData.postCount; // to set total posts as received from backend
         this.posts = postData.posts; // replace original posts with the received array, store data in subscription property (no mem leak)
       });
+
+    // get and store authStatus -- for intial load
+    this.userIsAuthenticated = this.authService.getIsAuth();
+
+    // get and store authStatus -- works only for status changes
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {
+      this.userIsAuthenticated = isAuthenticated;
+    });
   }
 
   onChangedPage(pageData: PageEvent) {
@@ -54,5 +65,6 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postsSub.unsubscribe(); // deactivate subscription when component destroyed
+    this.authStatusSub.unsubscribe(); // clear subscription of authStatus (own method)
   }
 }
