@@ -40,7 +40,8 @@ router.post('', jwtAuth, multer({storage: storage}).single('image'), (req, res, 
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url + '/images/' + req.file.filename
+    imagePath: url + '/images/' + req.file.filename,
+    owner: req.userData.userId
   }); // from bodyParser.json -- file.filename comes from multer
   post.save()
     // pick the ID of the saved document from the db and return it in the json
@@ -70,10 +71,19 @@ router.put("/:id", jwtAuth, multer({storage: storage}).single('image'), (req, re
     _id: req.body.id,
     title: req.body.title,
     content: req.body.content,
-    imagePath: imagePath
-  });
-  Post.updateOne({_id: req.params.id}, post).then(result => {
-    res.status(200).json({ message: "Update successful! "});
+    imagePath: imagePath,
+    owner: req.userData.userId
+  }); // keep original userID
+  // updateOne() conditions: {_id=id + owner = userID} -- this is for authorization
+  Post.updateOne({_id: req.params.id, owner: req.userData.userId}, post).then(result => {
+
+    // check if modified count > 0 -- or nothing changed
+    if (result.nModified > 0) {
+      res.status(200).json({ message: "Update successful! "});
+    } else {
+      res.status(401).json({ message: "User not authorized to update! "});
+    }
+
   })
 });
 
@@ -118,9 +128,16 @@ router.get('/:id', (req, res, next) => {
 
 // route for DELETE requests for /api/posts/:id
 router.delete('/:id', jwtAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id })
+  // deleteOne() conditions: {_id=id + owner = userID} -- this is for authorization
+  Post.deleteOne({ _id: req.params.id, owner: req.userData.userId })
     .then(result => {
-      res.status(200).json({ message: "Post deleted!" });
+
+      // check if deleted count > 0 -- or nothing changed
+      if (result.n > 0) {
+        res.status(200).json({ message: "Post deleted! "});
+      } else {
+        res.status(401).json({ message: "User not authorized to delete! "});
+      }
     });
 });
 

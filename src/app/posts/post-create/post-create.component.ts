@@ -40,7 +40,13 @@ export class PostCreateComponent implements OnInit {
         this.isLoading = true; // enable load spinner
         this.postsService.getPost(this.postId).subscribe(postData => {
           this.isLoading = false; // disable load spinner once subscribe completed
-          this.post = {id: postData._id, title: postData.title, content: postData.content, imagePath: postData.imagePath};
+          this.post = {
+            id: postData._id,
+            title: postData.title,
+            content: postData.content,
+            imagePath: postData.imagePath,
+            owner: postData.owner
+          };
           this.form.setValue({
             title: this.post.title,
             content: this.post.content,
@@ -72,7 +78,10 @@ export class PostCreateComponent implements OnInit {
     this.isLoading = true;
     if (this.mode === 'create') {
       console.log('ng create mode');
-      this.postsService.addPost(this.form.value.title, this.form.value.content, this.form.value.image);
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image);
     } else {
       console.log('ng edit mode');
       this.postsService.updatePost(this.postId, this.form.value.title, this.form.value.content, this.form.value.image);

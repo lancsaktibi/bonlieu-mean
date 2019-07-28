@@ -66,10 +66,11 @@ router.post("/login", (req, res, next) => {
             'secret_this_should_be_longer',
             {expiresIn: '1h'}
           );
-          // send token + expiration (in seconds -- optional) to the frontend
+          // send token + expiration (in seconds -- optional) + userID to the frontend
           return res.status(200).json({
             token: token,
-            expiresIn: 3600
+            expiresIn: 3600,
+            userId: fetchedUser._id
           })
         })
         // fail for compare() -- never happens: always success (true/false)

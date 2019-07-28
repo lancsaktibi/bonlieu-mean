@@ -9,7 +9,12 @@ module.exports = (req, res, next) => {
   // ... as well check whether token is valid -- if not, go to error block
   try {
     const token = req.headers.authorization.split(' ')[1];
-    jwt.verify(token, 'secret_this_should_be_longer'); // verify token with jwt
+    const decodedToken = jwt.verify(token, 'secret_this_should_be_longer'); // verify token with jwt
+
+    // add email and userID as additional parameter to the request
+    // to make it visible for coming authorization in routes/post
+    req.userData = { email: decodedToken.email, userId: decodedToken.userId };
+
     next(); // step out and continue
   } catch (error) {
     res.status(401).json({message: 'User is not authenticated!'});

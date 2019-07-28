@@ -28,7 +28,8 @@ export class PostsService {
                 title: post.title,
                 content: post.content,
                 id: post._id,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                owner: post.owner
               };
             }),
             maxPosts: postData.maxPosts
@@ -50,7 +51,13 @@ export class PostsService {
 
   // to get a single post for edit
   getPost(id: string) {
-    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(BACKEND_URL + id);
+    return this.http.get<{
+      _id: string,
+      title: string,
+      content: string,
+      imagePath: string,
+      owner: string
+    }>(BACKEND_URL + id);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -59,7 +66,7 @@ export class PostsService {
     postData.append('title', title);
     postData.append('content', content);
     postData.append('image', image, title); // title will be the filename of the image
-
+    postData.append('owner', null); // send empty string as owner (handled on backend)
     this.http.post<{message: string, post: Post}>(BACKEND_URL, postData)
       .subscribe((responseData) => {
         this.router.navigate(['/']); // redirect -- onInit() will reload the posts anyhow (here was a reload script but no more needed)
@@ -82,7 +89,8 @@ export class PostsService {
           id,
           title,
           content,
-          imagePath: image
+          imagePath: image,
+          owner: null
         };
     }
 

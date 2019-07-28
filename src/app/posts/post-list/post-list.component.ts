@@ -19,6 +19,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   pageSizeOptions = [1, 2, 5, 10]; // options for user to show items for paginator
   currentPage = 1; // initial value for paginator
   userIsAuthenticated = false; // public authStatus
+  userId: string; // public userId
   private postsSub: Subscription;
   private authStatusSub: Subscription; // private authStatus
 
@@ -33,6 +34,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true; // to show spinner
     this.postsService.getPosts(this.postsPerPage, this.currentPage); // triggers getPost -- with paginator init params
+    this.userId = this.authService.getUserId(); // get userID from login/backend
     this.postsSub = this.postsService.getPostUpdateListener()
       .subscribe((postData: {posts: Post[], postCount: number}) => {
         this.isLoading = false; // to hide spinner once subscribe completed
@@ -46,6 +48,7 @@ export class PostListComponent implements OnInit, OnDestroy {
     // get and store authStatus -- works only for status changes
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {
       this.userIsAuthenticated = isAuthenticated;
+      this.userId = this.authService.getUserId(); // look for updates in userID
     });
   }
 

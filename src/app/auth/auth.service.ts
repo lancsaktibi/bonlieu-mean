@@ -17,6 +17,7 @@ export class AuthService {
   // global variable to store token
   private token: string;
   private tokenTimer: any; // variable for token expiration
+  private userId: string; // variable for user ID from the backend
   // auth status listener to push status across modules (true false)
   private authStatusListener = new Subject<boolean>();
 
@@ -30,6 +31,11 @@ export class AuthService {
   // spread initial status for post-list (listener only sends data on auth changes)
   getIsAuth() {
     return this.isAuthenticated;
+  }
+
+  // spread userID across the app for post list
+  getUserId() {
+    return this.userId;
   }
 
   // return authStatus as observable for other modules
@@ -48,7 +54,7 @@ export class AuthService {
   // login
   login(email: string, password: string) {
     const authData: AuthData = {email, password};
-    this.http.post<{token: string, expiresIn: number}>(BACKEND_URL + 'login', authData)
+    this.http.post<{token: string, expiresIn: number, userId: string}>(BACKEND_URL + 'login', authData)
       .subscribe(response => {
         const token = response.token; // get the token value from the response
         this.token = token; // store token in the service
@@ -57,6 +63,7 @@ export class AuthService {
           const expiresInDuration = response.expiresIn; // expiration info from backend
           this.setAuthTimer(expiresInDuration); // call separated authTimer method
           this.isAuthenticated = true; // set initial status to true
+          this.userId = response.userId; // pick userId from backend response
           this.authStatusListener.next(true); // set authStatus to true and spread across the app
 
           // create expiration date
@@ -64,7 +71,7 @@ export class AuthService {
           // create expiration timestamp in date format
           const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
 
-          this.saveAuthData(token, expirationDate); // save token to local storage
+          this.saveAuthData(token, expirationDate, this.userId); // save token to local storage
           this.router.navigate(['/']); // redirect to main page
         }
       });
@@ -82,6 +89,7 @@ export class AuthService {
     if (expiresIn > 0) {
       this.token = authInformation.token; // add token to reply package
       this.isAuthenticated = true;
+      this.userId = authInformation.userId; // add userId
       this.setAuthTimer(expiresIn / 1000); // set expiration timer (works with seconds)
       this.authStatusListener.next(true); // spread info across the app
     }
@@ -91,6 +99,7 @@ export class AuthService {
     this.token = null; // clear token
     this.isAuthenticated = false; // set status to false
     this.authStatusListener.next(false); // set authStatus to false and spread across the app
+    this.userId = null; // clear userId
     clearTimeout(this.tokenTimer); // clear timer
     this.clearAuthData(); // clear token from local storage
     this.router.navigate(['/']); // redirect to main page
@@ -102,19 +111,22 @@ export class AuthService {
     }, duration * 1000); // node.js timeout() with expiry function & timing in ms
   }
 
-  private saveAuthData(token: string, expirationDate: Date) {
+  private saveAuthData(token: string, expirationDate: Date, userId: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString()); // standardized format
+    localStorage.setItem('userId', userId); // store userId
   }
 
   private clearAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
+    localStorage.removeItem('userId');
   }
 
   private getAuthData() {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
+    const userId = localStorage.getItem('userId');
     // check whether we have got the data from localstorage
     if (!token || !expirationDate) {
       return;
@@ -122,7 +134,8 @@ export class AuthService {
     // if we have it, send it back -- date in the right format
     return {
       token,
-      expirationDate: new Date(expirationDate)
+      expirationDate: new Date(expirationDate),
+      userId
     };
   }
 }
