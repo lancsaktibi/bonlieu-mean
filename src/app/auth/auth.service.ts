@@ -48,6 +48,8 @@ export class AuthService {
     const authData: AuthData = {email, password};
     this.http.post(BACKEND_URL + 'signup', authData)
       .subscribe(response => {
+        console.log(response);
+        this.router.navigate(['/']); // redirect to main page
       });
   }
 
