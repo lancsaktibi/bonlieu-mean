@@ -62,8 +62,12 @@ export class PostListComponent implements OnInit, OnDestroy {
   onDelete(postId: string) {
     this.isLoading = true; // to show spinner
     this.postsService.deletePost(postId).subscribe(() => {
+      // as we used a return function in service.ts deletePost(), on completion we run a getPosts() here
       this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    }); // as we used a return function in service.ts deletePost(), on completion we run a getPosts() here
+    }, () => {
+      // second argument for error handling
+      this.isLoading = false; // close spinner in case of error
+    });
   }
 
   ngOnDestroy() {

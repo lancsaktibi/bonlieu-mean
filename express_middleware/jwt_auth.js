@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 
+// import env file with JWT_KEY
+require('dotenv').config();
+
 // export the jws middleware
 module.exports = (req, res, next) => {
   // receive the token in the request header
@@ -9,7 +12,7 @@ module.exports = (req, res, next) => {
   // ... as well check whether token is valid -- if not, go to error block
   try {
     const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, 'secret_this_should_be_longer'); // verify token with jwt
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY); // verify token with jwt
 
     // add email and userID as additional parameter to the request
     // to make it visible for coming authorization in routes/post

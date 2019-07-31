@@ -47,9 +47,10 @@ export class AuthService {
   createUser(email: string, password: string) {
     const authData: AuthData = {email, password};
     this.http.post(BACKEND_URL + 'signup', authData)
-      .subscribe(response => {
-        console.log(response);
-        this.router.navigate(['/']); // redirect to main page
+      .subscribe(() => {
+        this.router.navigate(['/']); // redirect to main page in case of success
+      }, error => {
+        this.authStatusListener.next(false); // push authstatus false across the app
       });
   }
 
@@ -76,6 +77,9 @@ export class AuthService {
           this.saveAuthData(token, expirationDate, this.userId); // save token to local storage
           this.router.navigate(['/']); // redirect to main page
         }
+      }, error => {
+          // error handler
+          this.authStatusListener.next(false); // spread status = false across the app
       });
   }
 
