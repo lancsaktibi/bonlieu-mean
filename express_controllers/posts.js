@@ -5,8 +5,10 @@ const Post = require('../mongo_models/post');
 exports.createPost = (req, res, next) => {
   const url = req.protocol + '://' + req.get('host'); // create the file url up until the host
   const post = new Post({
-    title: req.body.title,
-    content: req.body.content,
+    titleHu: req.body.titleHu,
+    titleEn: req.body.titleEn,
+    contentHu: req.body.contentHu,
+    contentEn: req.body.contentEn,
     imagePath: url + '/images/' + req.file.filename,
     owner: req.userData.userId
   }); // from bodyParser.json -- file.filename comes from multer
@@ -83,8 +85,10 @@ exports.updatePost = (req, res, next) => {
   // move from req to post layout
   const post = new Post({
     _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content,
+    titleHu: req.body.titleHu,
+    titleEn: req.body.titleEn,
+    contentHu: req.body.contentHu,
+    contentEn: req.body.contentEn,
     imagePath: imagePath,
     owner: req.userData.userId
   }); // keep original userID

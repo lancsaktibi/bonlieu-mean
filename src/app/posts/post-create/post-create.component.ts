@@ -7,6 +7,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { mimeType } from './mime-type.validator';
 import { AuthService } from 'src/app/auth/auth.service';
+import { LanguageService } from 'src/app/language/language.service';
 
 @Component({
   selector: 'app-post-create',
@@ -15,8 +16,6 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 
 export class PostCreateComponent implements OnInit, OnDestroy {
-  enteredTitle = '';
-  enteredContent = '';
   post: Post; // intitalize only, should be public as we need to acess it in .html
   isLoading = false;
   form: FormGroup; // reactive form
@@ -24,11 +23,14 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   private mode = 'create'; // be in create mode by default, change it if postId exists
   private postId: string; // initialize only
   private authStatusSub: Subscription; // to store authStatus
+  private createLangListenerSubs: Subscription; // to handle lang change
+  createLang: any; // to store language strings
 
   constructor(
     public postsService: PostsService,
     public route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit() {
@@ -39,10 +41,14 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       });
 
     this.form = new FormGroup({
-      title: new FormControl(null, {
+      titleHu: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
       }),
-      content: new FormControl(null, {validators: [Validators.required]}),
+      titleEn: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)]
+      }),
+      contentHu: new FormControl(null, {validators: [Validators.required]}),
+      contentEn: new FormControl(null, {validators: [Validators.required]}),
       image: new FormControl(null, {validators: [Validators.required], asyncValidators: [mimeType]})
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -54,14 +60,18 @@ export class PostCreateComponent implements OnInit, OnDestroy {
           this.isLoading = false; // disable load spinner once subscribe completed
           this.post = {
             id: postData._id,
-            title: postData.title,
-            content: postData.content,
+            titleHu: postData.titleHu,
+            titleEn: postData.titleEn,
+            contentHu: postData.contentHu,
+            contentEn: postData.contentEn,
             imagePath: postData.imagePath,
             owner: postData.owner
           };
           this.form.setValue({
-            title: this.post.title,
-            content: this.post.content,
+            titleHu: this.post.titleHu,
+            titleEn: this.post.titleEn,
+            contentHu: this.post.contentHu,
+            contentEn: this.post.contentEn,
             image: this.post.imagePath
           });
         });
@@ -70,6 +80,17 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.postId = null;
       }
     });
+
+    // set languageSubs to the current value from the subscription
+    this.createLangListenerSubs = this.languageService.getCreateLangListener()
+      .subscribe(
+        createLang => {
+          this.createLang = createLang; // load values from the service subscription
+        }
+      );
+
+    // get default language settings from service
+    this.languageService.onLang('EN');
   }
 
   onImagePicked(event: Event) {
@@ -91,17 +112,26 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     if (this.mode === 'create') {
       console.log('ng create mode');
       this.postsService.addPost(
-        this.form.value.title,
-        this.form.value.content,
+        this.form.value.titleHu,
+        this.form.value.titleEn,
+        this.form.value.contentHu,
+        this.form.value.contentEn,
         this.form.value.image);
     } else {
       console.log('ng edit mode');
-      this.postsService.updatePost(this.postId, this.form.value.title, this.form.value.content, this.form.value.image);
+      this.postsService.updatePost(
+        this.postId,
+        this.form.value.titleHu,
+        this.form.value.titleEn,
+        this.form.value.contentHu,
+        this.form.value.contentEn,
+        this.form.value.image);
     }
     this.form.reset(); // to clear data after submission
   }
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
+    this.createLangListenerSubs.unsubscribe();
   }
 }

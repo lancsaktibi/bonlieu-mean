@@ -6,9 +6,9 @@
         <mat-error *ngIf="emailInput.invalid">Please enter a valid e-mail!</mat-error>
       </mat-form-field>
       <mat-form-field>
-        <input matInput name="password" ngModel type="password" placeholder="Password" #passwordInput="ngModel" required>
+        <input matInput name="password" ngModel type="password" placeholder="{{ authLang.password }}" #passwordInput="ngModel" required>
         <mat-error *ngIf="passwordInput.invalid">Please enter a valid password!</mat-error>
       </mat-form-field>
-      <button mat-raised-button color="primary" type="submit" *ngIf="!isLoading">Signup</button>
+      <button mat-raised-button color="primary" type="submit" *ngIf="!isLoading">{{ authLang.signup }}</button>
   </form>
   </mat-card>

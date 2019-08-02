@@ -2,20 +2,28 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!isLoading">
       <mat-form-field>
-        <input matInput type="text" formControlName="title" name="title" placeholder="Post Title">
-        <mat-error *ngIf="form.get('title').invalid">Please enter a post title!</mat-error>
+        <input matInput type="text" formControlName="titleHu" name="titleHu" placeholder="Cikk címe magyarul">
+        <mat-error *ngIf="form.get('titleHu').invalid">Add meg a cikk címét!</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" formControlName="titleEn" name="titleEn" placeholder="Post Title in English">
+        <mat-error *ngIf="form.get('titleEn').invalid">Please enter a post title!</mat-error>
       </mat-form-field>
       <div>
-        <button mat-stroked-button type="button" (click)="filePicker.click()">Pick Image</button>
+        <button mat-stroked-button type="button" (click)="filePicker.click()">{{ createLang.pick }}</button>
         <input type="file" #filePicker (change)="onImagePicked($event)">
       </div>
       <div class="image-preview" *ngIf="imagePreview !== '' && imagePreview && form.get('image').valid">
         <img [src]="imagePreview" [alt]="form.value.title">
       </div>
       <mat-form-field>
-        <textarea matInput rows="4" formControlName="content" name="content" placeholder="Post Content"></textarea>
-        <mat-error *ngIf="form.get('content').invalid">Please enter a post content!</mat-error>
+        <textarea matInput rows="4" formControlName="contentHu" name="contentHu" placeholder="Cikk szövege magyarul"></textarea>
+        <mat-error *ngIf="form.get('contentHu').invalid">Add meg a cikk szövegét!</mat-error>
       </mat-form-field>
-      <button mat-raised-button color="primary" type="submit">Save Post</button>
+      <mat-form-field>
+        <textarea matInput rows="4" formControlName="contentEn" name="contentEn" placeholder="Post Content in English"></textarea>
+        <mat-error *ngIf="form.get('contentEn').invalid">Please enter a post content!</mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">{{ createLang.save }}</button>
   </form>
   </mat-card>

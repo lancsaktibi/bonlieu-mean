@@ -25,8 +25,10 @@ export class PostsService {
           return {
             posts: postData.posts.map(post => {
               return {
-                title: post.title,
-                content: post.content,
+                titleHu: post.titleHu,
+                titleEn: post.titleEn,
+                contentHu: post.contentHu,
+                contentEn: post.contentEn,
                 id: post._id,
                 imagePath: post.imagePath,
                 owner: post.owner
@@ -53,19 +55,23 @@ export class PostsService {
   getPost(id: string) {
     return this.http.get<{
       _id: string,
-      title: string,
-      content: string,
+      titleHu: string,
+      titleEn: string,
+      contentHu: string,
+      contentEn: string,
       imagePath: string,
       owner: string
     }>(BACKEND_URL + id);
   }
 
-  addPost(title: string, content: string, image: File) {
+  addPost(titleHu: string, titleEn: string, contentHu: string, contentEn: string, image: File) {
     // get data with formData method
     const postData = new FormData();
-    postData.append('title', title);
-    postData.append('content', content);
-    postData.append('image', image, title); // title will be the filename of the image
+    postData.append('titleHu', titleHu);
+    postData.append('titleEn', titleEn);
+    postData.append('contentHu', contentHu);
+    postData.append('contentEn', contentEn);
+    postData.append('image', image, titleEn); // title will be the filename of the image
     postData.append('owner', null); // send empty string as owner (handled on backend)
     this.http.post<{message: string, post: Post}>(BACKEND_URL, postData)
       .subscribe((responseData) => {
@@ -73,7 +79,14 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
+  updatePost(
+    id: string,
+    titleHu: string,
+    titleEn: string,
+    contentHu: string,
+    contentEn: string,
+    image: File | string
+  ) {
 
     // check whether we have a new file or only a link in image
     let postData: FormData | Post;
@@ -81,14 +94,18 @@ export class PostsService {
       // get data with formData method
       postData = new FormData();
       postData.append('id', id); // this is to keep the old id in mongo
-      postData.append('title', title);
-      postData.append('content', content);
-      postData.append('image', image, title); // title will be the filename of the image
+      postData.append('titleHu', titleHu);
+      postData.append('titleEn', titleEn);
+      postData.append('contentHu', contentHu);
+      postData.append('contentEn', contentEn);
+      postData.append('image', image, titleEn); // title will be the filename of the image
     } else {
         postData = {
           id,
-          title,
-          content,
+          titleHu,
+          titleEn,
+          contentHu,
+          contentEn,
           imagePath: image,
           owner: null
         };

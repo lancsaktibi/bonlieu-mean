@@ -2,17 +2,20 @@
   <span><a routerLink="/">bonli.eu</a></span>
   <span class="spacer"></span>
   <ul>
+      <li>
+          <a mat-button (click)="onLang(headerLang.lang)">{{ headerLang.button }}</a>
+        </li>
     <li *ngIf="userIsAuthenticated">
-      <a mat-button routerLink="/create" routerLinkActive="mat-accent">New Post</a>
+      <a mat-button routerLink="/create" routerLinkActive="mat-accent">{{ headerLang.newPost }}</a>
     </li>
     <li *ngIf="!userIsAuthenticated">
-        <a mat-button routerLink="/auth/login" routerLinkActive="mat-accent">Login</a>
+        <a mat-button routerLink="/auth/login" routerLinkActive="mat-accent">{{ headerLang.login }}</a>
       </li>
   <li *ngIf="!userIsAuthenticated">
-    <a mat-button routerLink="/auth/signup" routerLinkActive="mat-accent">Signup</a>
+    <a mat-button routerLink="/auth/signup" routerLinkActive="mat-accent">{{ headerLang.signup }}</a>
   </li>
   <li *ngIf="userIsAuthenticated">
-    <button mat-button (click)="onLogout()">Logout</button>
+    <button mat-button (click)="onLogout()">{{ headerLang.logout }}</button>
   </li>
 </ul>
 </mat-toolbar>

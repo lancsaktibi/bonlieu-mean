@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 import { AuthService } from 'src/app/auth/auth.service';
+import { LanguageService } from '../../language/language.service';
 
 @Component({
   selector: 'app-post-list',
@@ -22,14 +23,13 @@ export class PostListComponent implements OnInit, OnDestroy {
   userId: string; // public userId
   private postsSub: Subscription;
   private authStatusSub: Subscription; // private authStatus
+  private listLangListenerSubs: Subscription; // to handle lang change
+  listLang: any; // to store language string
 
-  //  posts = [
-  //    {title: 'First Post', content: 'This is the first post text'},
-  //    {title: 'Second Post', content: 'This is the second post text'},
-  //    {title: 'Third Post', content: 'This is the third post text'}
-  //  ];
-
-  constructor(public postsService: PostsService, private authService: AuthService) {}
+  constructor(
+    public postsService: PostsService,
+    private authService: AuthService,
+    private languageService: LanguageService) {}
 
   ngOnInit() {
     this.isLoading = true; // to show spinner
@@ -50,6 +50,17 @@ export class PostListComponent implements OnInit, OnDestroy {
       this.userIsAuthenticated = isAuthenticated;
       this.userId = this.authService.getUserId(); // look for updates in userID
     });
+
+    // set languageSubs to the current value from the subscription
+    this.listLangListenerSubs = this.languageService.getListLangListener()
+      .subscribe(
+        listLang => {
+          this.listLang = listLang; // load values from the service subscription
+        }
+      );
+
+    // get default language settings from service
+    this.languageService.onLang('EN');
   }
 
   onChangedPage(pageData: PageEvent) {
@@ -73,5 +84,6 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.postsSub.unsubscribe(); // deactivate subscription when component destroyed
     this.authStatusSub.unsubscribe(); // clear subscription of authStatus (own method)
+    this.listLangListenerSubs.unsubscribe();
   }
 }
